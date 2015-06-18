@@ -9,6 +9,14 @@
  * @property {number} cost
  * @property {string} description
  */
+ function Spell (name, cost, description){
+  this.name = name;
+  this.cost = cost;
+  this.description = description;
+  this.printDetails = function(){
+    console.log(name + "," + cost + ","  +  description);
+  }
+ }
 
   /**
    * Print out all spell details and format it nicely.
@@ -19,6 +27,11 @@
    * note: using comma separated arguments for console.log() will not satisfy the tests
    * e.g. console.log(a, b, c); <-- no commas, please use string concatenation.
    */
+function DamageSpell(name, cost, damage, description){
+ Spell.call(this, name, cost, description)
+  this.damage = damage;
+}
+DamageSpell.prototype = new Spell();
 
 /**
  * A spell that deals damage.
@@ -58,6 +71,60 @@
  * @property {mana} mana
  * @property {boolean} isAlive  Default value should be `true`.
  */
+ function Spellcaster(name, health, mana){
+    this.name = name;
+    this.health = health;
+    this.mana = mana;
+    this.isAlive = true;
+
+    this.inflictDamage = function(damage){
+      this.health = this.health - damage;
+      if (this.health <= 0){
+        this.health = 0;
+      }
+
+      if (this.health === 0){
+        this.isAlive = false;
+      }
+
+    }
+    this.spendMana = function (cost){
+      if(this.mana >= cost){
+        this.mana = this.mana - cost;
+        return true
+      }else{
+        return false
+      }
+
+     }
+
+      this.invoke = function(spell, target){
+    if ((spell instanceof DamageSpell) && (target instanceof Spellcaster)) {
+        if (this.spendMana(spell.cost)) {
+        target.inflictDamage(spell.damage);
+        return true;
+    }else {
+      return false;
+   }
+
+   } else if ((spell instanceof DamageSpell) && !(target instanceof Spellcaster)) {
+      return false;
+   } else if (spell instanceof Spell) {
+
+      if (this.spendMana(spell.cost)) {
+
+      return true;
+      } else {
+      return false;
+   }
+   }else{
+      return false;
+   }
+    }
+}
+
+
+
 
   /**
    * The spellcaster loses health equal to `damage`.
